@@ -38,25 +38,32 @@
 	          </a>
 	        </div>
 	        <ul class="nav">
-				<li>
-					<a href="{% url 'core:indice' 0|slugify%}">
-						<i class="tim-icons icon-bullet-list-67"></i>
-						<p><font size=3><b>Indice</b></font></p>
-					</a>
-				</li>
-				<li>
-					<a href="{% url 'core:inventario' 0|slugify%}">
-						<i class="tim-icons icon-chart-bar-32"></i>
-						<p><font size=3><b>inventario</b></font></p>
-					</a>
-				</li>
-				<li>
-					<a href="{% url 'core:inventario' 0|slugify%}">
-						<i class="tim-icons icon-chart-bar-32"></i>
-						<p><font size=3><b>inventario</b></font></p>
-					</a>
-				</li>
-				
+				{% if request.user.is_authenticated %}
+					<li>
+						<a href="{% url 'core:indice' 0|slugify%}">
+							<i class="tim-icons icon-bullet-list-67"></i>
+							<p><font size=3><b>Indice</b></font></p>
+						</a>
+					</li>
+					<li>
+						<a href="{% url 'core:inventario' 0|slugify%}">
+							<i class="tim-icons icon-chart-bar-32"></i>
+							<p><font size=3><b>Inventario</b></font></p>
+						</a>
+					</li>
+					<li>
+						<a href="{% url 'core:productos' 0|slugify%}">
+							<i class="tim-icons icon-double-right"></i>
+							<p><font size=3><b>Entrada</b></font></p>
+						</a>
+					</li>
+					<li>
+						<a href="{% url 'core:inventario' 0|slugify%}">
+							<i class="tim-icons icon-double-left"></i>
+							<p><font size=3><b>Salida</b></font></p>
+						</a>
+					</li>
+				{% endif %}
 	        </ul>
 	      </div>
 	    </div>

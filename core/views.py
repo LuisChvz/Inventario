@@ -6,8 +6,8 @@ from django.views.generic.detail import DetailView
 from braces.views import SuperuserRequiredMixin, LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from .forms import NuevaCategoriaForm, NuevoProductoForm, NuevoProductoForm2
-from .models import Categoria, Producto, Entrada, Salida
+from .forms import NuevaCategoriaForm, NuevoProductoForm, NuevoProductoForm2, NuevaEntradaForm
+from .models import Categoria, Producto, Movimiento
 
 
 
@@ -25,6 +25,12 @@ class NuevoProducto(LoginRequiredMixin, CreateView):
     model = Producto
     form_class = NuevoProductoForm
     success_url = reverse_lazy('core:indice', args=[0])
+    
+    def get_initial(self):
+        return {
+            'paquetes':0,
+            'empaquetado':True,
+        }
     
 class NuevoProducto2(LoginRequiredMixin, CreateView):
     model = Producto
@@ -54,3 +60,57 @@ def inventario(request, categoria):
         
     return render(request, 'core/inventario.html', {'categorias': categorias, 'productos': productos, 'filtro':filtro})
     
+
+def Productos(request, categoria):
+    filtro = categoria
+    categorias = Categoria.objects.all()
+    
+    if filtro == 0:
+        productos = Producto.objects.all()
+    else:
+        productos = Producto.objects.filter(categoria = filtro)
+        
+    return render(request, 'core/productos.html', {'categorias': categorias, 'productos': productos, 'filtro':filtro})
+
+def NuevaEntrada(request, pk):
+    
+    if request.method == 'POST':
+        form = NuevaEntradaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            
+            movimiento = Movimiento.objects.latest('id')
+            producto = Producto.objects.get(id = pk)
+            
+            if movimiento.medida:
+                movimiento.unidades = movimiento.cantidad
+                movimiento.paquetes = movimiento.cantidad/producto.unidadPaquete
+                movimiento.unidadesSueltas = movimiento.cantidad % producto.unidadPaquete
+                movimiento.save()
+                
+                producto.existencias = producto.existencias + movimiento.unidades
+                producto.save()
+                
+                producto.paquetes = producto.existencias / producto.unidadPaquete
+                producto.sueltas = producto.existencias % producto.unidadPaquete
+                producto.save()
+                
+            else:
+                movimiento.paquetes = movimiento.cantidad
+                movimiento.unidades = movimiento.cantidad * producto.unidadPaquete
+                movimiento.save()
+                
+                producto.existencias = producto.existencias + movimiento.unidades
+                producto.save()
+                
+                producto.paquetes = producto.paquetes + movimiento.paquetes
+                producto.sueltas = producto.existencias % producto.unidadPaquete
+                producto.save()
+                
+                
+            return redirect('core:inventario', 0)
+    else:
+        form = NuevaEntradaForm()
+        form.initial['producto'] = pk
+    
+    return render(request, 'core/entrada_form.html', {'form':form})

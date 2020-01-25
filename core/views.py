@@ -38,6 +38,7 @@ class NuevoProducto2(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('core:indice', args=[0])
  
     
+@login_required
 def Indice(request, categoria):
     filtro = categoria
     categorias = Categoria.objects.all()
@@ -49,6 +50,8 @@ def Indice(request, categoria):
         
     return render(request, 'core/indice.html', {'categorias': categorias, 'productos': productos, 'filtro':filtro})
 
+
+@login_required
 def inventario(request, categoria):
     filtro = categoria
     categorias = Categoria.objects.all()
@@ -61,6 +64,7 @@ def inventario(request, categoria):
     return render(request, 'core/inventario.html', {'categorias': categorias, 'productos': productos, 'filtro':filtro})
     
 
+@login_required
 def Productos(request, categoria):
     filtro = categoria
     categorias = Categoria.objects.all()
@@ -72,6 +76,8 @@ def Productos(request, categoria):
         
     return render(request, 'core/productos.html', {'categorias': categorias, 'productos': productos, 'filtro':filtro})
 
+
+@login_required
 def NuevaEntrada(request, pk):
     
     if request.method == 'POST':
@@ -115,6 +121,8 @@ def NuevaEntrada(request, pk):
     
     return render(request, 'core/entrada_form.html', {'form':form})
 
+
+@login_required
 def NuevaEntrada2(request, pk):
     
     if request.method == 'POST':

@@ -63,3 +63,16 @@ class NuevaEntradaForm(forms.ModelForm):
         labels = {
              'medida':'Seleccione la medida', 'cantidad':'Cantidad'
         }
+        
+class NuevaEntradaForm2(forms.ModelForm):
+    
+    class Meta: 
+        model = Movimiento
+        fields = ['cantidad', 'producto']
+        widgets = {
+            'cantidad': forms.NumberInput(attrs={'class':'form-control', 'placeholder':'0'}),
+            'producto':forms.HiddenInput(),
+        }
+        labels = {
+            'cantidad':'Cantidad'
+        }

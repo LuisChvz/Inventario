@@ -6,7 +6,7 @@ from django.views.generic.detail import DetailView
 from braces.views import SuperuserRequiredMixin, LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from .forms import NuevaCategoriaForm, NuevoProductoForm, NuevoProductoForm2, NuevaEntradaForm
+from .forms import NuevaCategoriaForm, NuevoProductoForm, NuevoProductoForm2, NuevaEntradaForm, NuevaEntradaForm2
 from .models import Categoria, Producto, Movimiento
 
 
@@ -111,6 +111,32 @@ def NuevaEntrada(request, pk):
             return redirect('core:inventario', 0)
     else:
         form = NuevaEntradaForm()
+        form.initial['producto'] = pk
+    
+    return render(request, 'core/entrada_form.html', {'form':form})
+
+def NuevaEntrada2(request, pk):
+    
+    if request.method == 'POST':
+        form = NuevaEntradaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            
+            movimiento = Movimiento.objects.latest('id')
+            producto = Producto.objects.get(id = pk)
+            
+
+            movimiento.unidades = movimiento.cantidad
+            movimiento.unidadesSueltas = movimiento.cantidad
+            movimiento.save()
+            
+            producto.existencias = producto.existencias + movimiento.unidades
+            producto.sueltas = producto.sueltas + movimiento.unidadesSueltas
+            producto.save()
+                
+            return redirect('core:inventario', 0)
+    else:
+        form = NuevaEntradaForm2()
         form.initial['producto'] = pk
     
     return render(request, 'core/entrada_form.html', {'form':form})

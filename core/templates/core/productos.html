@@ -89,8 +89,11 @@
 							
 							<tbody>
 								{% for p in productos|dictsort:'categoria.id' %}
+								{% if p.empaquetado %}
 									<tr id={{p.id}} onMouseOver="ResaltarFila({{p.id}});" onMouseOut="RestablecerFila({{p.id}}, '')" onClick="CrearEnlace('{% url 'core:nuevaentrada' p.id|slugify %}');">
-
+								{% else %}
+									<tr id={{p.id}} onMouseOver="ResaltarFila({{p.id}});" onMouseOut="RestablecerFila({{p.id}}, '')" onClick="CrearEnlace('{% url 'core:nuevaentrada2' p.id|slugify %}');">
+								{% endif %}
 										<td align = center>
 											<p><b><font size="3">{{p.id}}</font></b></p>
 										</td>
